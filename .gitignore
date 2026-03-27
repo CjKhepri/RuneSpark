@@ -1,0 +1,24 @@
+# UE5 generated directories
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+
+# IDE files
+.vs/
+.idea/
+*.sln
+*.suo
+
+# OS junk
+Thumbs.db
+.DS_Store
+
+# Build files
+*.VC.db
+*.opensdf
+*.opendb
+*.sdf
+*.ipch
+*.pdb
+*.lib
