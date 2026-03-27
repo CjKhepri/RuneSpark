@@ -19,14 +19,18 @@ public class RuneSpark : ModuleRules
 			Path.Combine(ModuleDirectory, "Public"),
 			Path.Combine(ModuleDirectory, "Public/Actors"),
 			Path.Combine(ModuleDirectory, "Public/Animation"),
-			Path.Combine(ModuleDirectory, "Public/Components")
+			Path.Combine(ModuleDirectory, "Public/Components"),
+			Path.Combine(ModuleDirectory, "Public/Controllers"),
+			Path.Combine(ModuleDirectory, "Public/GameModes")
 		});
 		PrivateIncludePaths.AddRange(new string[]
 		{
 			Path.Combine(ModuleDirectory, "Private"),
 			Path.Combine(ModuleDirectory, "Private/Actors"),
 			Path.Combine(ModuleDirectory, "Private/Animation"),
-			Path.Combine(ModuleDirectory, "Private/Components")
+			Path.Combine(ModuleDirectory, "Private/Components"),
+			Path.Combine(ModuleDirectory, "Private/Controllers"),
+			Path.Combine(ModuleDirectory, "Private/GameModes")
 		});
 
 	}

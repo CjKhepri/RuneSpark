@@ -1,5 +1,12 @@
 #include "RuneSparkMovementComponent.h"
 
+URuneSparkMovementComponent::URuneSparkMovementComponent()
+{
+	bOrientToControlRotationDirection = true;
+	bOrientToVelocityDirection = false;
+	bOrientToInputDirection = false;
+}
+
 void URuneSparkMovementComponent::BindReplicationData_Implementation()
 {
 	Super::BindReplicationData_Implementation();

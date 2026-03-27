@@ -16,7 +16,9 @@ class RUNESPARK_API URuneSparkMovementComponent : public UGMCE_OrganicMovementCm
 	GENERATED_BODY()
 
 public:
-
+	
+	URuneSparkMovementComponent();
+	
 	// GMAS overrides
 	virtual void BindReplicationData_Implementation() override;
 	virtual void GenAncillaryTick_Implementation(float DeltaTime, bool bLocalMove, bool bCombinedClientMove) override;
