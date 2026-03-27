@@ -1,7 +1,7 @@
 #include "RuneSparkPawn.h"
 
 #include "EnhancedInputComponent.h"
-#include "RuneSpark/Components/RuneSparkMovementComponent.h"
+#include "Components/RuneSparkMovementComponent.h"
 #include "Utility/GMASUtilities.h"
 
 ARuneSparkPawn::ARuneSparkPawn(const FObjectInitializer& ObjectInitializer)

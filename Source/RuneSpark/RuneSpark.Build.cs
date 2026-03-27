@@ -14,12 +14,19 @@ public class RuneSpark : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "GMCCore", "GMCAbilitySystem", "GMCExtended", "GMCExtendedAnimation" });
 
+		PublicIncludePaths.AddRange(new string[]
+		{
+			Path.Combine(ModuleDirectory, "Public"),
+			Path.Combine(ModuleDirectory, "Public/Actors"),
+			Path.Combine(ModuleDirectory, "Public/Animation"),
+			Path.Combine(ModuleDirectory, "Public/Components")
+		});
 		PrivateIncludePaths.AddRange(new string[]
 		{
-			ModuleDirectory,
-			Path.Combine(ModuleDirectory, "Actors"), 
-			Path.Combine(ModuleDirectory, "Animation"), 
-			Path.Combine(ModuleDirectory, "Components")
+			Path.Combine(ModuleDirectory, "Private"),
+			Path.Combine(ModuleDirectory, "Private/Actors"),
+			Path.Combine(ModuleDirectory, "Private/Animation"),
+			Path.Combine(ModuleDirectory, "Private/Components")
 		});
 
 	}
