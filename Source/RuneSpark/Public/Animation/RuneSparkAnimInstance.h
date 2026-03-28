@@ -91,6 +91,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Distance Matching")
 	float PredictedPivotDistance { 0.f };
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Movement")
+	float GroundSpeed { 0.f };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Movement")
+	bool bIsMoving { false };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Movement")
+	bool bIsGrounded { true };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Movement")
+	bool bIsAirborne { false };
+
 private:
 	void ObtainComponents();
 	

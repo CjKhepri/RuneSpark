@@ -110,6 +110,19 @@ void URuneSparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		WorldInputAcceleration = LocalInputAcceleration = InputAcceleration;
 	}
 
+	// Ground speed (horizontal only)
+	GroundSpeed = FVector(WorldVelocity.X, WorldVelocity.Y, 0.f).Size();
+	bIsMoving = GroundSpeed > 3.0f && bHasInput;
+
+	// Locomotion angle - direction of movement relative to actor facing
+	if (GroundSpeed > 3.0f)
+	{
+		LocomotionAngle = MovementComponent->GetLocomotionAngle();
+	}
+
+	// Movement mode
+	bIsAirborne = MovementComponent->IsAirborne();
+	bIsGrounded = !bIsAirborne;
 	
 	bFirstUpdate = false;
 }
