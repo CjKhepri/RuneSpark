@@ -123,6 +123,111 @@ void URuneSparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	// Movement mode
 	bIsAirborne = MovementComponent->IsAirborne();
 	bIsGrounded = !bIsAirborne;
+
+	// Cardinal Direction (only update when moving)
+	if (bHasInput)
+	{
+		CardinalDirection = GetNextCardinalDirection(CardinalDirection, LocomotionAngle * 1.2f);
+	}
+
+	// Play Rate
+	{
+		const float TotalSpeedScale = GroundSpeed / 700.0f;
+		const float PlaybackWeight = 0.5f;
+		const float MinPlayRate = 0.9f;
+		const float MaxPlayRate = 1.1f;
+
+		const float WeightedSpeed = FMath::Lerp(1.0f, TotalSpeedScale, PlaybackWeight);
+		PlayRate = FMath::Clamp(WeightedSpeed, MinPlayRate, MaxPlayRate);
+	}
+
+	// Stride Scale
+	{
+		const float TotalSpeedScale = GroundSpeed / 700.0f;
+		StrideScale = (PlayRate > 0.0f) ? TotalSpeedScale / PlayRate : 1.0f;
+	}
+
+	// Accel Lean
+	{
+		const float SpeedOverBase = FMath::Clamp(GroundSpeed - 700.0f, 0.0f, 400.0f);
+		const float DotProduct = FVector::DotProduct(
+			LocalVelocity.GetSafeNormal(),
+			LocalAcceleration.GetSafeNormal());
+		AccelLean = FMath::Lerp(0.0f, SpeedOverBase, DotProduct);
+	}
 	
 	bFirstUpdate = false;
+}
+
+int32 URuneSparkAnimInstance::GetNextCardinalDirection(int32 CurrentCardinalDirection, float RelativeDirection,
+	float StepDelta, float SkipDelta)
+{
+	switch (CurrentCardinalDirection)
+	{
+	case 0: // North
+		{
+			if (RelativeDirection > StepDelta)
+			{
+				return RelativeDirection > SkipDelta ? 2 : 1;
+			}
+			else if (RelativeDirection < -StepDelta)
+			{
+				return RelativeDirection < -SkipDelta ? 2 : 3;
+			}
+		}
+		break;
+
+	case 1: // East
+		{
+			float OffsetDir = RelativeDirection - 90.0f;
+			if (OffsetDir < -180.0f) OffsetDir += 360.0f;
+
+			if (OffsetDir > StepDelta)
+			{
+				return OffsetDir > SkipDelta ? 3 : 2;
+			}
+			else if (OffsetDir < -StepDelta)
+			{
+				return OffsetDir < -SkipDelta ? 3 : 0;
+			}
+		}
+		break;
+
+	case 2: // South
+		{
+			float OffsetDir = RelativeDirection - 180.0f;
+			if (OffsetDir < -180.0f) OffsetDir += 360.0f;
+			else if (OffsetDir > 180.0f) OffsetDir -= 360.0f;
+
+			if (OffsetDir > StepDelta)
+			{
+				return OffsetDir > SkipDelta ? 0 : 3;
+			}
+			else if (OffsetDir < -StepDelta)
+			{
+				return OffsetDir < -SkipDelta ? 0 : 1;
+			}
+		}
+		break;
+
+	case 3: // West
+		{
+			float OffsetDir = RelativeDirection + 90.0f;
+			if (OffsetDir > 180.0f) OffsetDir -= 360.0f;
+
+			if (OffsetDir > StepDelta)
+			{
+				return OffsetDir > SkipDelta ? 1 : 0;
+			}
+			else if (OffsetDir < -StepDelta)
+			{
+				return OffsetDir < -SkipDelta ? 1 : 2;
+			}
+		}
+		break;
+	default:
+		break;
+	}
+
+	return CurrentCardinalDirection;
 }

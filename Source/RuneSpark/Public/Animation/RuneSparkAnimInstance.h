@@ -22,8 +22,24 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintCallable, Category="Animation Warping Utility")
+	static int32 GetNextCardinalDirection(int32 CurrentCardinalDirection, float RelativeDirection,
+		float StepDelta = 60.0f, float SkipDelta = 135.0f);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State")
 	URuneSparkMovementComponent* MovementComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Locomotion")
+	int32 CardinalDirection { 0 };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Locomotion")
+	float PlayRate { 1.0f };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Locomotion")
+	float StrideScale { 1.0f };move to new w
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Locomotion")
+	float AccelLean { 0.0f };
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State")
 	bool bFirstUpdate { true };
