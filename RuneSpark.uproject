@@ -24,7 +24,7 @@
 		},
 		{
 			"Name": "Strider",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "AnimationWarping",

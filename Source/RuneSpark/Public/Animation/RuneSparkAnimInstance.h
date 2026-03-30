@@ -36,7 +36,7 @@ public:
 	float PlayRate { 1.0f };
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Locomotion")
-	float StrideScale { 1.0f };move to new w
+	float StrideScale { 1.0f };
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Locomotion")
 	float AccelLean { 0.0f };

@@ -1,0 +1,46 @@
+{
+	"FileVersion": 3,
+	"Version": 11,
+	"VersionName": "Strider v1.11",
+	"FriendlyName": "Strider",
+	"Description": "An animation plugin which provided procedural animation warping nodes to modify a character's stride and posture in certain situations.",
+	"Category": "Animation",
+	"CreatedBy": "Vault Break Studios Pty. Ltd.",
+	"CreatedByURL": "https://www.vaultbreak.com",
+	"DocsURL": "https://docs.google.com/document/d/10BXxS6j0EUt47INlHjCrMgagHgeVPVONR0I5LCWTNMw/edit?usp=sharing",
+	"MarketplaceURL": "",
+	"SupportURL": "https://www.vaultbreak.com/contact-8",
+	"EngineVersion": "5.4.0",
+	"CanContainContent": false,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "Strider",
+			"Type": "Runtime",
+			"LoadingPhase": "PreDefault",
+			"PlatformAllowList": [
+				"Win64",
+				"Linux",
+				"Mac",
+				"IOS",
+				"Android"
+			],
+			"AdditionalDependencies": [
+				"AnimGraphRuntime"
+			]
+		},
+		{
+			"Name": "StriderEditor",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "PreDefault",
+			"PlatformAllowList": [
+				"Win64",
+				"Linux",
+				"Mac"
+			],
+			"AdditionalDependencies": [
+				"AnimGraph"
+			]
+		}
+	]
+}
