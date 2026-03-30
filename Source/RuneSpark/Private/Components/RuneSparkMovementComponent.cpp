@@ -7,6 +7,46 @@ URuneSparkMovementComponent::URuneSparkMovementComponent()
 	bOrientToInputDirection = false;
 }
 
+void URuneSparkMovementComponent::CalculateVelocity(float DeltaSeconds)
+{
+	Super::CalculateVelocity(DeltaSeconds);
+
+	if (!IsMovingOnGround() || Velocity.IsNearlyZero())
+	{
+		return;
+	}
+
+	const FVector Input = GetProcessedInputVector();
+	if (Input.IsNearlyZero())
+	{
+		return;
+	}
+
+	const FVector VelDir = Velocity.GetSafeNormal2D();
+	const FVector InputDir = Input.GetSafeNormal2D();
+	const float Alignment = FVector::DotProduct(VelDir, InputDir);
+
+	if (Alignment < 0.95f)
+	{
+		// Push velocity toward input direction
+		const float BlendAlpha = FMath::Clamp(1.0f - Alignment, 0.0f, 1.0f);
+		const float ExtraAccel = DirectionChangeAcceleration * BlendAlpha * DeltaSeconds;
+		Velocity += InputDir * ExtraAccel;
+
+		// Scrub velocity perpendicular to input direction
+		const FVector VelAlongInput = InputDir * FVector::DotProduct(Velocity, InputDir);
+		const FVector VelPerpendicular = Velocity - FVector(0.f, 0.f, Velocity.Z) - VelAlongInput;
+		Velocity -= VelPerpendicular * FMath::Clamp(DirectionChangeScrubRate * DeltaSeconds, 0.f, 1.f);
+
+		// Don't exceed max speed
+		const float MaxSpeed = GetMaxSpeed();
+		if (Velocity.Size2D() > MaxSpeed)
+		{
+			Velocity = Velocity.GetSafeNormal2D() * MaxSpeed + FVector(0.f, 0.f, Velocity.Z);
+		}
+	}
+}
+
 void URuneSparkMovementComponent::BindReplicationData_Implementation()
 {
 	Super::BindReplicationData_Implementation();

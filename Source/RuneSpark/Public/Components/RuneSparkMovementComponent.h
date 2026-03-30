@@ -18,6 +18,14 @@ class RUNESPARK_API URuneSparkMovementComponent : public UGMCE_OrganicMovementCm
 public:
 	
 	URuneSparkMovementComponent();
+
+	virtual void CalculateVelocity(float DeltaSeconds) override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement|Tempo")
+	float DirectionChangeAcceleration = 6000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement|Tempo")
+	float DirectionChangeScrubRate = 8.0f;
 	
 	// GMAS overrides
 	virtual void BindReplicationData_Implementation() override;

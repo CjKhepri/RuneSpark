@@ -37,7 +37,6 @@ void URuneSparkAnimInstance::ObtainComponents()
 	}	
 }
 
-
 void URuneSparkAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
@@ -57,6 +56,11 @@ void URuneSparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
+	//Debug section
+
+
+	//End Debug section
+	
 	if (bFirstUpdate && !MovementComponent && GMCPawn)
 	{
 		MovementComponent = Cast<URuneSparkMovementComponent>(GMCPawn->GetMovementComponent());
@@ -129,7 +133,7 @@ void URuneSparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		CardinalDirection = GetNextCardinalDirection(CardinalDirection, LocomotionAngle * 1.2f);
 	}
-
+	
 	// Play Rate
 	{
 		const float TotalSpeedScale = GroundSpeed / 700.0f;
@@ -159,41 +163,41 @@ void URuneSparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bFirstUpdate = false;
 }
 
-int32 URuneSparkAnimInstance::GetNextCardinalDirection(int32 CurrentCardinalDirection, float RelativeDirection,
+E4CardinalDirection URuneSparkAnimInstance::GetNextCardinalDirection(E4CardinalDirection CurrentCardinalDirection, float RelativeDirection,
 	float StepDelta, float SkipDelta)
 {
 	switch (CurrentCardinalDirection)
 	{
-	case 0: // North
+	case E4CardinalDirection::Front:
 		{
 			if (RelativeDirection > StepDelta)
 			{
-				return RelativeDirection > SkipDelta ? 2 : 1;
+				return RelativeDirection > SkipDelta ? E4CardinalDirection::Back : E4CardinalDirection::Right;
 			}
 			else if (RelativeDirection < -StepDelta)
 			{
-				return RelativeDirection < -SkipDelta ? 2 : 3;
+				return RelativeDirection < -SkipDelta ? E4CardinalDirection::Back : E4CardinalDirection::Left;
 			}
 		}
 		break;
 
-	case 1: // East
+	case E4CardinalDirection::Right:
 		{
 			float OffsetDir = RelativeDirection - 90.0f;
 			if (OffsetDir < -180.0f) OffsetDir += 360.0f;
 
 			if (OffsetDir > StepDelta)
 			{
-				return OffsetDir > SkipDelta ? 3 : 2;
+				return OffsetDir > SkipDelta ? E4CardinalDirection::Left : E4CardinalDirection::Back;
 			}
 			else if (OffsetDir < -StepDelta)
 			{
-				return OffsetDir < -SkipDelta ? 3 : 0;
+				return OffsetDir < -SkipDelta ? E4CardinalDirection::Left : E4CardinalDirection::Front;
 			}
 		}
 		break;
 
-	case 2: // South
+	case E4CardinalDirection::Back:
 		{
 			float OffsetDir = RelativeDirection - 180.0f;
 			if (OffsetDir < -180.0f) OffsetDir += 360.0f;
@@ -201,30 +205,31 @@ int32 URuneSparkAnimInstance::GetNextCardinalDirection(int32 CurrentCardinalDire
 
 			if (OffsetDir > StepDelta)
 			{
-				return OffsetDir > SkipDelta ? 0 : 3;
+				return OffsetDir > SkipDelta ? E4CardinalDirection::Front : E4CardinalDirection::Left;
 			}
 			else if (OffsetDir < -StepDelta)
 			{
-				return OffsetDir < -SkipDelta ? 0 : 1;
+				return OffsetDir < -SkipDelta ? E4CardinalDirection::Front : E4CardinalDirection::Right;
 			}
 		}
 		break;
 
-	case 3: // West
+	case E4CardinalDirection::Left:
 		{
 			float OffsetDir = RelativeDirection + 90.0f;
 			if (OffsetDir > 180.0f) OffsetDir -= 360.0f;
 
 			if (OffsetDir > StepDelta)
 			{
-				return OffsetDir > SkipDelta ? 1 : 0;
+				return OffsetDir > SkipDelta ? E4CardinalDirection::Right : E4CardinalDirection::Front;
 			}
 			else if (OffsetDir < -StepDelta)
 			{
-				return OffsetDir < -SkipDelta ? 1 : 2;
+				return OffsetDir < -SkipDelta ? E4CardinalDirection::Right : E4CardinalDirection::Back;
 			}
 		}
 		break;
+
 	default:
 		break;
 	}

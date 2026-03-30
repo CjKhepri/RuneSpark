@@ -7,6 +7,16 @@
 #include "RuneSparkMovementComponent.h"
 #include "RuneSparkAnimInstance.generated.h"
 
+
+UENUM(BlueprintType)
+enum class E4CardinalDirection : uint8
+{
+	Front = 0,
+	Right = 1,
+	Back = 2,
+	Left = 3
+};
+
 /**
  * 
  */
@@ -23,14 +33,14 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	UFUNCTION(BlueprintCallable, Category="Animation Warping Utility")
-	static int32 GetNextCardinalDirection(int32 CurrentCardinalDirection, float RelativeDirection,
+	static E4CardinalDirection GetNextCardinalDirection(E4CardinalDirection CurrentCardinalDirection, float RelativeDirection,
 		float StepDelta = 60.0f, float SkipDelta = 135.0f);
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State")
 	URuneSparkMovementComponent* MovementComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Locomotion")
-	int32 CardinalDirection { 0 };
+	E4CardinalDirection CardinalDirection { E4CardinalDirection::Front };
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Locomotion")
 	float PlayRate { 1.0f };

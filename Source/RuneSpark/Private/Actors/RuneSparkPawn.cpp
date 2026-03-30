@@ -14,11 +14,12 @@ ARuneSparkPawn::ARuneSparkPawn(const FObjectInitializer& ObjectInitializer)
 	// Configure the parent's spring arm for third-person shooter
 	if (SpringArmComponent)
 	{
-		SpringArmComponent->TargetArmLength = 400.0f;
+		SpringArmComponent->SetupAttachment(MeshComponent);
+		SpringArmComponent->TargetArmLength = 350.0f;
 		SpringArmComponent->bUsePawnControlRotation = true;
-		SpringArmComponent->bEnableCameraLag = true;
+		SpringArmComponent->bEnableCameraLag = false;
 		SpringArmComponent->CameraLagSpeed = 10.0f;
-		SpringArmComponent->SocketOffset = FVector(0.f, 0.f, 80.f);
+		SpringArmComponent->SocketOffset = FVector(0.f, 0.f, 0.f);
 	}
 }
 
