@@ -32,9 +32,8 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
-	UFUNCTION(BlueprintCallable, Category="Animation Warping Utility")
-	static E4CardinalDirection GetNextCardinalDirection(E4CardinalDirection CurrentCardinalDirection, float RelativeDirection,
-		float StepDelta = 60.0f, float SkipDelta = 135.0f);
+	static E4CardinalDirection GetNextCardinalDirection(E4CardinalDirection CurrentDirection, float RelativeDirection,
+		float StepDelta = 60.0f, float SkipDelta = 120.0f);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State")
 	URuneSparkMovementComponent* MovementComponent;
@@ -122,6 +121,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Movement")
 	bool bIsMoving { false };
+	
+	bool bWasMovingLastFrame = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="State|Movement")
 	bool bIsGrounded { true };

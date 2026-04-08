@@ -128,10 +128,30 @@ void URuneSparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsAirborne = MovementComponent->IsAirborne();
 	bIsGrounded = !bIsAirborne;
 
-	// Cardinal Direction (only update when moving)
-	if (bHasInput)
+	// Cardinal Direction
+	if (bHasInput && GroundSpeed > 3.0f)
 	{
-		CardinalDirection = GetNextCardinalDirection(CardinalDirection, LocomotionAngle * 1.2f);
+		if (!bWasMovingLastFrame)
+		{
+			// Just started moving - set cardinal direction directly, skip hysteresis
+			if (LocomotionAngle >= -45.f && LocomotionAngle < 45.f)
+				CardinalDirection = E4CardinalDirection::Front;
+			else if (LocomotionAngle >= 45.f && LocomotionAngle < 135.f)
+				CardinalDirection = E4CardinalDirection::Right;
+			else if (LocomotionAngle >= -135.f && LocomotionAngle < -45.f)
+				CardinalDirection = E4CardinalDirection::Left;
+			else
+				CardinalDirection = E4CardinalDirection::Back;
+		}
+		else
+		{
+			CardinalDirection = GetNextCardinalDirection(CardinalDirection, LocomotionAngle);
+		}
+		bWasMovingLastFrame = true;
+	}
+	else
+	{
+		bWasMovingLastFrame = false;
 	}
 	
 	// Play Rate
@@ -163,76 +183,76 @@ void URuneSparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bFirstUpdate = false;
 }
 
-E4CardinalDirection URuneSparkAnimInstance::GetNextCardinalDirection(E4CardinalDirection CurrentCardinalDirection, float RelativeDirection,
-	float StepDelta, float SkipDelta)
+E4CardinalDirection URuneSparkAnimInstance::GetNextCardinalDirection(E4CardinalDirection CurrentDirection, float RelativeDirection,
+    float StepDelta, float SkipDelta)
 {
-	switch (CurrentCardinalDirection)
-	{
-	case E4CardinalDirection::Front:
-		{
-			if (RelativeDirection > StepDelta)
-			{
-				return RelativeDirection > SkipDelta ? E4CardinalDirection::Back : E4CardinalDirection::Right;
-			}
-			else if (RelativeDirection < -StepDelta)
-			{
-				return RelativeDirection < -SkipDelta ? E4CardinalDirection::Back : E4CardinalDirection::Left;
-			}
-		}
-		break;
+    switch (CurrentDirection)
+    {
+    case E4CardinalDirection::Front:
+        {
+            if (RelativeDirection > StepDelta)
+            {
+                return RelativeDirection > SkipDelta ? E4CardinalDirection::Back : E4CardinalDirection::Right;
+            }
+            else if (RelativeDirection < -StepDelta)
+            {
+                return RelativeDirection < -SkipDelta ? E4CardinalDirection::Back : E4CardinalDirection::Left;
+            }
+            break;
+        }
+    case E4CardinalDirection::Back:
+        {
+            float OffsetDir = RelativeDirection - 180.0f;
+            if (OffsetDir < -180.0f) OffsetDir += 360.0f;
+            else if (OffsetDir > 180.0f) OffsetDir -= 360.0f;
 
-	case E4CardinalDirection::Right:
-		{
-			float OffsetDir = RelativeDirection - 90.0f;
-			if (OffsetDir < -180.0f) OffsetDir += 360.0f;
+            if (OffsetDir > StepDelta)
+            {
+                return OffsetDir > SkipDelta ? E4CardinalDirection::Front : E4CardinalDirection::Left;
+            }
+            else if (OffsetDir < -StepDelta)
+            {
+                return OffsetDir < -SkipDelta ? E4CardinalDirection::Front : E4CardinalDirection::Right;
+            }
+            break;
+        }
+    case E4CardinalDirection::Right:
+        {
+            float OffsetDir = RelativeDirection - 90.0f;
+            if (OffsetDir < -180.0f) OffsetDir += 360.0f;
 
-			if (OffsetDir > StepDelta)
-			{
-				return OffsetDir > SkipDelta ? E4CardinalDirection::Left : E4CardinalDirection::Back;
-			}
-			else if (OffsetDir < -StepDelta)
-			{
-				return OffsetDir < -SkipDelta ? E4CardinalDirection::Left : E4CardinalDirection::Front;
-			}
-		}
-		break;
+            const float StrafeStepDelta = 46.0f;
 
-	case E4CardinalDirection::Back:
-		{
-			float OffsetDir = RelativeDirection - 180.0f;
-			if (OffsetDir < -180.0f) OffsetDir += 360.0f;
-			else if (OffsetDir > 180.0f) OffsetDir -= 360.0f;
+            if (OffsetDir > StrafeStepDelta)
+            {
+                return OffsetDir > SkipDelta ? E4CardinalDirection::Left : E4CardinalDirection::Back;
+            }
+            else if (OffsetDir < -StrafeStepDelta)
+            {
+                return OffsetDir < -SkipDelta ? E4CardinalDirection::Back : E4CardinalDirection::Front;
+            }
+            break;
+        }
+    case E4CardinalDirection::Left:
+        {
+            float OffsetDir = RelativeDirection + 90.0f;
+            if (OffsetDir > 180.0f) OffsetDir -= 360.0f;
 
-			if (OffsetDir > StepDelta)
-			{
-				return OffsetDir > SkipDelta ? E4CardinalDirection::Front : E4CardinalDirection::Left;
-			}
-			else if (OffsetDir < -StepDelta)
-			{
-				return OffsetDir < -SkipDelta ? E4CardinalDirection::Front : E4CardinalDirection::Right;
-			}
-		}
-		break;
+            const float StrafeStepDelta = 45.0f;
 
-	case E4CardinalDirection::Left:
-		{
-			float OffsetDir = RelativeDirection + 90.0f;
-			if (OffsetDir > 180.0f) OffsetDir -= 360.0f;
+            if (OffsetDir > StrafeStepDelta)
+            {
+                return OffsetDir > SkipDelta ? E4CardinalDirection::Right : E4CardinalDirection::Front;
+            }
+            else if (OffsetDir < -StrafeStepDelta)
+            {
+                return OffsetDir < -SkipDelta ? E4CardinalDirection::Right : E4CardinalDirection::Back;
+            }
+            break;
+        }
+    default:
+        break;
+    }
 
-			if (OffsetDir > StepDelta)
-			{
-				return OffsetDir > SkipDelta ? E4CardinalDirection::Right : E4CardinalDirection::Front;
-			}
-			else if (OffsetDir < -StepDelta)
-			{
-				return OffsetDir < -SkipDelta ? E4CardinalDirection::Right : E4CardinalDirection::Back;
-			}
-		}
-		break;
-
-	default:
-		break;
-	}
-
-	return CurrentCardinalDirection;
+    return CurrentDirection;
 }

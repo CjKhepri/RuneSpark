@@ -9,40 +9,53 @@ URuneSparkMovementComponent::URuneSparkMovementComponent()
 
 void URuneSparkMovementComponent::CalculateVelocity(float DeltaSeconds)
 {
+	const FVector VelBefore = FVector(Velocity.X, Velocity.Y, 0.f);
+	const float SpeedBefore = VelBefore.Size();
+	const FVector DirBefore = SpeedBefore > 1.f ? VelBefore / SpeedBefore : FVector::ZeroVector;
+
 	Super::CalculateVelocity(DeltaSeconds);
 
-	if (!IsMovingOnGround() || Velocity.IsNearlyZero())
+	if (!IsMovingOnGround())
 	{
 		return;
 	}
 
+	const FVector VelAfter = FVector(Velocity.X, Velocity.Y, 0.f);
+	const float SpeedAfter = VelAfter.Size();
 	const FVector Input = GetProcessedInputVector();
-	if (Input.IsNearlyZero())
+
+	if (Input.IsNearlyZero() || DirBefore.IsNearlyZero())
 	{
 		return;
 	}
 
-	const FVector VelDir = Velocity.GetSafeNormal2D();
-	const FVector InputDir = Input.GetSafeNormal2D();
-	const float Alignment = FVector::DotProduct(VelDir, InputDir);
+	const float DirectionDelta = 1.0f - FVector::DotProduct(DirBefore, VelAfter.GetSafeNormal());
 
-	if (Alignment < 0.95f)
+	if (DirectionDelta < 0.01f && SpeedAfter > SpeedBefore)
 	{
-		// Push velocity toward input direction
-		const float BlendAlpha = FMath::Clamp(1.0f - Alignment, 0.0f, 1.0f);
-		const float ExtraAccel = DirectionChangeAcceleration * BlendAlpha * DeltaSeconds;
-		Velocity += InputDir * ExtraAccel;
+		// Straight line - throttle speed gain
+		const float SpeedGain = SpeedAfter - SpeedBefore;
+		const float MaxGainPerFrame = StraightLineAcceleration * DeltaSeconds;
 
-		// Scrub velocity perpendicular to input direction
-		const FVector VelAlongInput = InputDir * FVector::DotProduct(Velocity, InputDir);
-		const FVector VelPerpendicular = Velocity - FVector(0.f, 0.f, Velocity.Z) - VelAlongInput;
-		Velocity -= VelPerpendicular * FMath::Clamp(DirectionChangeScrubRate * DeltaSeconds, 0.f, 1.f);
-
-		// Don't exceed max speed
-		const float MaxSpeed = GetMaxSpeed();
-		if (Velocity.Size2D() > MaxSpeed)
+		if (SpeedGain > MaxGainPerFrame)
 		{
-			Velocity = Velocity.GetSafeNormal2D() * MaxSpeed + FVector(0.f, 0.f, Velocity.Z);
+			const float ClampedSpeed = SpeedBefore + MaxGainPerFrame;
+			Velocity = VelAfter.GetSafeNormal() * ClampedSpeed + FVector(0.f, 0.f, Velocity.Z);
+		}
+	}
+
+	// If velocity opposes input, throttle the total velocity change
+	const float VelInputAlignment = FVector::DotProduct(DirBefore, Input.GetSafeNormal2D());
+	if (VelInputAlignment < 0.0f)
+	{
+		const FVector VelDelta = VelAfter - VelBefore;
+		const float DeltaMagnitude = VelDelta.Size();
+		const float MaxDeltaPerFrame = ReversalAcceleration * DeltaSeconds;
+
+		if (DeltaMagnitude > MaxDeltaPerFrame)
+		{
+			const FVector ClampedDelta = VelDelta.GetSafeNormal() * MaxDeltaPerFrame;
+			Velocity = FVector(VelBefore.X + ClampedDelta.X, VelBefore.Y + ClampedDelta.Y, Velocity.Z);
 		}
 	}
 }

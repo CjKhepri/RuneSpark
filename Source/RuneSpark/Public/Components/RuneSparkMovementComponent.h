@@ -25,7 +25,10 @@ public:
 	float DirectionChangeAcceleration = 6000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement|Tempo")
-	float DirectionChangeScrubRate = 8.0f;
+	float StraightLineAcceleration = 1500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement|Tempo")
+	float ReversalAcceleration = 3000.0f;
 	
 	// GMAS overrides
 	virtual void BindReplicationData_Implementation() override;
