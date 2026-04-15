@@ -60,6 +60,22 @@ void URuneSparkMovementComponent::CalculateVelocity(float DeltaSeconds)
 	}
 }
 
+FVector URuneSparkMovementComponent::PreProcessInputVector_Implementation(FVector InRawInputVector)
+{
+	FVector Result = Super::PreProcessInputVector_Implementation(InRawInputVector);
+
+	if (!Result.IsNearlyZero())
+	{
+		SmoothedInputVector = FMath::VInterpTo(SmoothedInputVector, Result, GetWorld()->GetDeltaSeconds(), 15.0f);
+		return SmoothedInputVector;
+	}
+	else
+	{
+		SmoothedInputVector = FVector::ZeroVector;
+		return Result;
+	}
+}
+
 void URuneSparkMovementComponent::BindReplicationData_Implementation()
 {
 	Super::BindReplicationData_Implementation();

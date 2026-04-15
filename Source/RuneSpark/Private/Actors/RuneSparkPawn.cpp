@@ -3,6 +3,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputComponent.h"
 #include "Components/RuneSparkMovementComponent.h"
+#include "Net/UnrealNetwork.h"
 
 ARuneSparkPawn::ARuneSparkPawn(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -46,6 +47,14 @@ void ARuneSparkPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &ARuneSparkPawn::HandleJumpReleased);
 		}
 	}
+}
+
+void ARuneSparkPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+    
+	DOREPLIFETIME(ARuneSparkPawn, bUseControllerDesiredRotation);
+	DOREPLIFETIME(ARuneSparkPawn, bOrientToMovement);
 }
 
 void ARuneSparkPawn::HandleJumpPressed()

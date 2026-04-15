@@ -154,21 +154,36 @@ void URuneSparkAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		bWasMovingLastFrame = false;
 	}
 	
+	// Reference speed based on blendspace animation authored speeds
+	float ReferenceSpeed;
+	if (GroundSpeed <= 250.0f)
+	{
+		ReferenceSpeed = 250.0f;
+	}
+	else if (GroundSpeed <= 700.0f)
+	{
+		ReferenceSpeed = FMath::Lerp(250.0f, 700.0f, (GroundSpeed - 250.0f) / 450.0f);
+	}
+	else
+	{
+		ReferenceSpeed = FMath::Lerp(700.0f, 1100.0f, FMath::Clamp((GroundSpeed - 700.0f) / 400.0f, 0.0f, 1.0f));
+	}
+
+	const float TotalSpeedScale = GroundSpeed / ReferenceSpeed;
+
 	// Play Rate
 	{
-		const float TotalSpeedScale = GroundSpeed / 700.0f;
-		const float PlaybackWeight = 0.5f;
-		const float MinPlayRate = 0.9f;
+		const float MinPlayRate = 0.7f;
 		const float MaxPlayRate = 1.1f;
-
-		const float WeightedSpeed = FMath::Lerp(1.0f, TotalSpeedScale, PlaybackWeight);
-		PlayRate = FMath::Clamp(WeightedSpeed, MinPlayRate, MaxPlayRate);
+		PlayRate = FMath::Clamp(TotalSpeedScale, MinPlayRate, MaxPlayRate);
 	}
 
 	// Stride Scale
 	{
-		const float TotalSpeedScale = GroundSpeed / 700.0f;
 		StrideScale = (PlayRate > 0.0f) ? TotalSpeedScale / PlayRate : 1.0f;
+
+		/*GEngine->AddOnScreenDebugMessage(3, 0.f, FColor::Yellow,
+			FString::Printf(TEXT("Speed=%.1f PlayRate=%.3f StrideScale=%.3f RefSpeed=%.1f"), GroundSpeed, PlayRate, StrideScale, ReferenceSpeed));*/
 	}
 
 	// Accel Lean
@@ -217,39 +232,41 @@ E4CardinalDirection URuneSparkAnimInstance::GetNextCardinalDirection(E4CardinalD
             break;
         }
     case E4CardinalDirection::Right:
-        {
-            float OffsetDir = RelativeDirection - 90.0f;
-            if (OffsetDir < -180.0f) OffsetDir += 360.0f;
+    	{
+    		float OffsetDir = RelativeDirection - 90.0f;
+    		if (OffsetDir < -180.0f) OffsetDir += 360.0f;
 
-            const float StrafeStepDelta = 46.0f;
+    		const float StrafeStepDelta = 46.0f;
+    		const float StrafeToFrontDelta = 70.0f;
 
-            if (OffsetDir > StrafeStepDelta)
-            {
-                return OffsetDir > SkipDelta ? E4CardinalDirection::Left : E4CardinalDirection::Back;
-            }
-            else if (OffsetDir < -StrafeStepDelta)
-            {
-                return OffsetDir < -SkipDelta ? E4CardinalDirection::Back : E4CardinalDirection::Front;
-            }
-            break;
-        }
+    		if (OffsetDir > StrafeStepDelta)
+    		{
+    			return OffsetDir > SkipDelta ? E4CardinalDirection::Left : E4CardinalDirection::Back;
+    		}
+    		else if (OffsetDir < -StrafeToFrontDelta)
+    		{
+    			return OffsetDir < -SkipDelta ? E4CardinalDirection::Back : E4CardinalDirection::Front;
+    		}
+    		break;
+    	}
     case E4CardinalDirection::Left:
-        {
-            float OffsetDir = RelativeDirection + 90.0f;
-            if (OffsetDir > 180.0f) OffsetDir -= 360.0f;
+    	{
+    		float OffsetDir = RelativeDirection + 90.0f;
+    		if (OffsetDir > 180.0f) OffsetDir -= 360.0f;
 
-            const float StrafeStepDelta = 45.0f;
+    		const float StrafeStepDelta = 45.0f;
+    		const float StrafeToFrontDelta = 70.0f;
 
-            if (OffsetDir > StrafeStepDelta)
-            {
-                return OffsetDir > SkipDelta ? E4CardinalDirection::Right : E4CardinalDirection::Front;
-            }
-            else if (OffsetDir < -StrafeStepDelta)
-            {
-                return OffsetDir < -SkipDelta ? E4CardinalDirection::Right : E4CardinalDirection::Back;
-            }
-            break;
-        }
+    		if (OffsetDir > StrafeToFrontDelta)
+    		{
+    			return OffsetDir > SkipDelta ? E4CardinalDirection::Right : E4CardinalDirection::Front;
+    		}
+    		else if (OffsetDir < -StrafeStepDelta)
+    		{
+    			return OffsetDir < -SkipDelta ? E4CardinalDirection::Right : E4CardinalDirection::Back;
+    		}
+    		break;
+    	}
     default:
         break;
     }

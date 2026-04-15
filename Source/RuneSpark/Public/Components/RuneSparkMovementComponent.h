@@ -19,6 +19,10 @@ public:
 	
 	URuneSparkMovementComponent();
 
+	virtual FVector PreProcessInputVector_Implementation(FVector InRawInputVector) override;
+
+	FVector SmoothedInputVector = FVector::ZeroVector;
+
 	virtual void CalculateVelocity(float DeltaSeconds) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement|Tempo")
