@@ -31,12 +31,6 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category="Movement|Rotation")
-	bool bUseControllerDesiredRotation = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category="Movement|Rotation")
-	bool bOrientToMovement = false;
-
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category="Components")
 	URuneSparkMovementComponent* MovementComponent;
 

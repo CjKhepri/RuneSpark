@@ -2,7 +2,7 @@
 
 URuneSparkMovementComponent::URuneSparkMovementComponent()
 {
-	bOrientToControlRotationDirection = true;
+	bOrientToControlRotationDirection = false;
 	bOrientToVelocityDirection = false;
 	bOrientToInputDirection = false;
 }
@@ -137,4 +137,16 @@ void URuneSparkMovementComponent::OnSolverChangedMode(FGameplayTag NewMode, FGam
 		}
 	}
 
+}
+
+
+void URuneSparkMovementComponent::MovementUpdate_Implementation(float DeltaSeconds)
+{
+	Super::MovementUpdate_Implementation(DeltaSeconds);
+
+	if (bTurnInPlaceActive && DeltaSeconds > 0.f)
+	{
+		FVector TargetDirection = TurnInPlaceTargetRotation.Vector();
+		RotateYawTowardsDirection(TargetDirection, TurnInPlaceInterpSpeed, DeltaSeconds);
+	}
 }

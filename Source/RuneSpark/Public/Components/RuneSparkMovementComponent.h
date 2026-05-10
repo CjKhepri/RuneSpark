@@ -33,6 +33,22 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Movement|Tempo")
 	float ReversalAcceleration = 3000.0f;
+
+
+	
+
+	// === Turn-in-Place ===
+	UPROPERTY(BlueprintReadWrite, Category="Movement|TurnInPlace")
+	bool bTurnInPlaceActive = false;
+
+	UPROPERTY(BlueprintReadWrite, Category="Movement|TurnInPlace")
+	FRotator TurnInPlaceTargetRotation = FRotator::ZeroRotator;
+
+	UPROPERTY(BlueprintReadWrite, Category="Movement|TurnInPlace")
+	float TurnInPlaceInterpSpeed = 0.f;
+
+	virtual void MovementUpdate_Implementation(float DeltaSeconds) override;
+	
 	
 	// GMAS overrides
 	virtual void BindReplicationData_Implementation() override;
